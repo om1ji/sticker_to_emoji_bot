@@ -1,6 +1,8 @@
 from bot_token import TOKEN
 
 import logging
+from io import BytesIO
+from PIL import Image
 from aiogram import Bot, Dispatcher, executor, types
 
 # Configure logging
@@ -9,6 +11,17 @@ logging.basicConfig(level=logging.INFO)
 # Initialize bot and dispatcher
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
+
+def convert(image_data: BytesIO) -> BytesIO:
+    sticker = Image.open(image_data)
+    max_dim = max(sticker.width, sticker.height)
+    new_dim = (int((sticker.width/max_dim)*100), int((sticker.height/max_dim)*100))
+    sticker.resize(new_dim)
+    emoji_img = Image.new(sticker.mode, (100,100), (255, 0, 0, 0))
+    emoji_img.paste(sticker, (max_dim//2))
+    emoji_file = BytesIO()
+    emoji_img.save(emoji_file, 'png')
+    return emoji_file
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
