@@ -14,8 +14,8 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
-def convert(image_data: BytesIO) -> BytesIO:
-    sticker = Image.open(image_data)
+def convert(sticker_file: BytesIO) -> BytesIO:
+    sticker = Image.open(sticker_file)
     max_dim = max(sticker.width, sticker.height)
     new_dim = (int((sticker.width/max_dim)*100), int((sticker.height/max_dim)*100))
     sticker.resize(new_dim)
@@ -30,15 +30,16 @@ async def send_welcome(message: types.Message):
     await message.reply("Send sticker and a properly resized image for emoji will be returned")
 
 @dp.message_handler(content_types=["sticker"])
-async def echo(message: types.Message):
-    sticker_path = await message.sticker.download()
-
-    image = Image.open(sticker_path.name)
-
-    # Waiting for Artemetra
+async def convert_msg(message: types.Message):
+    sticker = message.sticker
+    if sticker.is_animated or sticker.is_video:
+        await message.answer("ayo bruhv only static stickers please")
+        return
+    sticker_file = BytesIO()
+    sticker_path = await sticker.download(sticker_file)
+    emoji_file = convert(sticker_file)
+    await message.answer_document(InputFile(emoji_file), caption=sticker_path)
     
-    await message.answer_document(InputFile(sticker_path))
-    os.remove(sticker_path)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
