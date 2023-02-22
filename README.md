@@ -21,9 +21,6 @@ python main.py
 ```
 ✨ Here you go ✨
 
-
-
-
 *** 
 Resize function by @artemetra
 
