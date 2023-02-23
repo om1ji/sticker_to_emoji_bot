@@ -36,7 +36,7 @@ async def convert_msg(message: types.Message):
         await message.answer("ayo bruhv only static stickers please")
         return
     sticker_file = BytesIO()
-    sticker_path = await sticker.download(sticker_file)
+    sticker_path = await sticker.download(destination_file=sticker_file)
     emoji_file = convert(sticker_file)
     await message.answer_document(InputFile(emoji_file), caption=sticker_path)
     
