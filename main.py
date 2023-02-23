@@ -1,4 +1,3 @@
-from bot_token import TOKEN
 from aiogram.types.input_file import InputFile
 
 from PIL import Image
@@ -8,6 +7,10 @@ import logging
 from io import BytesIO
 from PIL import Image
 from aiogram import Bot, Dispatcher, executor, types
+
+
+TOKEN = ""
+
 
 logging.basicConfig(level=logging.INFO)
 
