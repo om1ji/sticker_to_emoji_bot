@@ -17,13 +17,26 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
+# https://note.nkmk.me/en/python-pillow-add-margin-expand-canvas/
+def expand2square(pil_img, background_color):
+    width, height = pil_img.size
+    if width == height:
+        return pil_img
+    elif width > height:
+        result = Image.new(pil_img.mode, (width, width), background_color)
+        result.paste(pil_img, (0, (width - height) // 2))
+        return result
+    else:
+        result = Image.new(pil_img.mode, (height, height), background_color)
+        result.paste(pil_img, ((height - width) // 2, 0))
+        return result
+
 def convert(sticker_file: BytesIO) -> BytesIO:
     sticker = Image.open(sticker_file)
     max_dim = max(sticker.width, sticker.height)
     new_dim = (int((sticker.width/max_dim)*100), int((sticker.height/max_dim)*100))
     sticker.resize(new_dim)
-    emoji_img = Image.new(sticker.mode, (100,100), (255, 0, 0, 0))
-    emoji_img.paste(sticker, (max_dim//2))
+    emoji_img = expand2square(sticker, background_color=(255, 0, 0, 0))
     emoji_file = BytesIO()
     emoji_img.save(emoji_file, 'png')
     return emoji_file
